@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BG Removal Pro</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background: linear-gradient(135deg, #4b6cb7, #182848);
+            color: white;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 90%;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+        }
+        h1 {
+            font-size: 24px;
+        }
+        input {
+            display: none;
+        }
+        label {
+            display: block;
+            padding: 10px 20px;
+            background: #ff7eb3;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 18px;
+            margin: 10px 0;
+        }
+        label:hover {
+            background: #ff4f8b;
+        }
+        img {
+            width: 100%;
+            max-height: 300px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin-top: 10px;
+        }
+        .btn-download {
+            display: none;
+            margin-top: 15px;
+            background: #28a745;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            text-decoration: none;
+        }
+        .btn-download:hover {
+            background: #218838;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Remove Image Background</h1>
+        <input type="file" id="upload" accept="image/*">
+        <label for="upload">Upload Image</label>
+        <img id="preview" src="" alt="Preview will appear here">
+        <img id="output" src="" alt="Processed Image" style="display:none;">
+        <a id="download" class="btn-download" download="bg_removed.png">Download Image</a>
+    </div>
+
+    <script>
+        const upload = document.getElementById('upload');
+        const preview = document.getElementById('preview');
+        const output = document.getElementById('output');
+        const downloadBtn = document.getElementById('download');
+
+        upload.addEventListener('change', async function() {
+            const file = this.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                preview.src = event.target.result;
+            };
+            reader.readAsDataURL(file);
+
+            const formData = new FormData();
+            formData.append("image_file", file);
+            formData.append("size", "auto");
+
+            try {
+                const response = await fetch("https://api.remove.bg/v1.0/removebg", {
+                    method: "POST",
+                    headers: {
+                        "X-Api-Key": "7at7wFDRB3Bn85bAWqqUoKxQ"
+                    },
+                    body: formData
+                });
+
+                if (!response.ok) throw new Error("Failed to remove background");
+
+                const blob = await response.blob();
+                const objectURL = URL.createObjectURL(blob);
+
+                output.src = objectURL;
+                output.style.display = "block";
+                downloadBtn.href = objectURL;
+                downloadBtn.style.display = "block";
+
+            } catch (error) {
+                alert("Error: " + error.message);
+            }
+        });
+    </script>
+
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pro BG Remover</title>
+    <style>
+        /* General Styling */
+        body {
+            font-family: 'Poppins', sans-serif;
+            text-align: center;
+            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+            color: white;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            width: 90%;
+            max-width: 500px;
+            margin: 80px auto;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease-in-out;
+        }
+
+        h1 {
+            font-size: 28px;
+            font-weight: 600;
+            animation: fadeIn 1.5s ease-in-out;
+        }
+
+        /* File Upload Button */
+        input {
+            display: none;
+        }
+        
+        label {
+            display: inline-block;
+            padding: 12px 25px;
+            background: #ff7eb3;
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: 500;
+            margin: 15px 0;
+            transition: 0.3s;
+            animation: fadeInUp 1.2s ease-in-out;
+        }
+        
+        label:hover {
+            background: #ff4f8b;
+            transform: scale(1.05);
+        }
+
+        /* Image Preview & Processed Output */
+        .image-container {
+            position: relative;
+            margin-top: 20px;
+            display: none;
+        }
+
+        img {
+            width: 100%;
+            max-height: 300px;
+            object-fit: cover;
+            border-radius: 10px;
+            opacity: 0;
+            animation: fadeIn 1s ease-in-out forwards;
+        }
+
+        /* Loading Animation */
+        .loader {
+            border: 6px solid rgba(255, 255, 255, 0.3);
+            border-top: 6px solid #ff7eb3;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            margin: 20px auto;
+            animation: spin 1s linear infinite;
+            display: none;
+        }
+
+        /* Download Button */
+        .btn-download {
+            display: none;
+            margin-top: 15px;
+            background: #28a745;
+            color: white;
+            padding: 12px 18px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            text-decoration: none;
+            transition: 0.3s;
+            animation: fadeInUp 1.5s ease-in-out;
+        }
+
+        .btn-download:hover {
+            background: #218838;
+            transform: scale(1.05);
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>AI Background Remover</h1>
+        <input type="file" id="upload" accept="image/*">
+        <label for="upload">Upload Image</label>
+        
+        <div class="image-container">
+            <img id="preview" src="" alt="Preview">
+            <div class="loader" id="loader"></div>
+            <img id="output" src="" alt="Processed Image">
+            <a id="download" class="btn-download" download="bg_removed.png">Download Image</a>
+        </div>
+    </div>
+
+    <script>
+        const upload = document.getElementById('upload');
+        const preview = document.getElementById('preview');
+        const output = document.getElementById('output');
+        const loader = document.getElementById('loader');
+        const downloadBtn = document.getElementById('download');
+        const imageContainer = document.querySelector('.image-container');
+
+        upload.addEventListener('change', async function() {
+            const file = this.files[0];
+            if (!file) return;
+
+            imageContainer.style.display = "block";
+            preview.style.opacity = "0";  
+            output.style.display = "none"; 
+            loader.style.display = "block";  
+
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                preview.src = event.target.result;
+                preview.style.opacity = "1";  
+            };
+            reader.readAsDataURL(file);
+
+            const formData = new FormData();
+            formData.append("image_file", file);
+            formData.append("size", "auto");
+
+            try {
+                const response = await fetch("https://api.remove.bg/v1.0/removebg", {
+                    method: "POST",
+                    headers: {
+                        "X-Api-Key": "7at7wFDRB3Bn85bAWqqUoKxQ"
+                    },
+                    body: formData
+                });
+
+                if (!response.ok) throw new Error("Failed to remove background");
+
+                const blob = await response.blob();
+                const objectURL = URL.createObjectURL(blob);
+
+                loader.style.display = "none";  
+                output.src = objectURL;
+                output.style.display = "block";  
+                downloadBtn.href = objectURL;
+                downloadBtn.style.display = "block"; 
+
+            } catch (error) {
+                alert("Error: " + error.message);
+                loader.style.display = "none";
+            }
+        });
+    </script>
+
+</body>
+</html>
